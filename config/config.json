@@ -1,0 +1,29 @@
+{
+  "development": {
+    
+    "username": "postgres",
+    "password": "postgres",
+    "database": "test",
+    "host": "localhost",
+    "dialect": "postgres",
+    "operatorAliases": false
+  },
+  "test": {
+    "username": "postgres",
+    "password": "postgres",
+    "database": "test",
+    "host": "localhost",
+    "dialect": "postgres",
+    "operatorAliases": false
+  },
+  "production": {
+    "username": "heroku-postgres-username",
+    "password": "heroku-postgres-password",
+    "database": "heroku-postgres-database",
+    "host": "heroku-postgres-host",
+    "dialect": "postgres",
+    "dialectOptions":{
+      "ssl": true
+    }
+  }
+}

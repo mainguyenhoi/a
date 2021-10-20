@@ -13,8 +13,42 @@ let hbs = expressHbs.create({
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs') 
 //Define your routes here
-app.get('/',(req, res)=>{
-    res.render('index');
+// app.get('/',(req, res)=>{
+//     res.render('index');
+// });
+app.use('/', require('./routes/indexRouter'));
+app.use('/products', require('./routes/productRouter'));
+const { Pool } = require('pg');
+// const pool = new Pool({
+//   connectionString: process.env.DATABASE_URL,
+//   ssl: {
+//     rejectUnauthorized: false
+//   }
+// });
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL || 'postgres://gisodprpoczmqi:ccc515a42e17923f8b3519cfa893f0f7f20351d387e6d768e7041f122e872ef0@ec2-52-200-68-5.compute-1.amazonaws.com:5432/dfqr4uhv1hmis7',
+    ssl: process.env.DATABASE_URL ? true : false
+})
+
+app.get('/db', async (req, res) => {
+    try {
+      const client = await pool.connect();
+      const result = await client.query('SELECT * FROM test_table');
+      const results = { 'results': (result) ? result.rows : null};
+      res.render('pages/db', results );
+      client.release();
+    } catch (err) {
+      console.error(err);
+      res.send("Error " + err);
+    }
+  })
+app.get('/sync', (req,res)=>{
+    let models = require('./models');
+    models.sequelize.sync().then(()=>
+    {
+        res.send('data sync completed')
+    });
+    
 });
 // app.get('/blog', (req, res)=>{
 //     res.render('blog');
