@@ -1,34 +1,26 @@
 let express= require('express');
+let helper=require('./controllers/helper');
 let app = express();
 //set public static folder
 app.use(express.static(__dirname+'/public'));
-//use view engine
+//use view engineS
 let expressHbs=require('express-handlebars');
 let hbs = expressHbs.create({
     extname: 'hbs',
     defaultLayout: 'layout',
     layoutsDir :__dirname+'/views/layouts/',
-    partialsDir: __dirname+'/views/partials/'
+    partialsDir: __dirname+'/views/partials/',
+    helpers : {
+        createStarList: helper.createStarList,
+        printStar: helper.printStar
+
+    }
 });
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs') 
-//Define your routes here
-// app.get('/',(req, res)=>{
-//     res.render('index');
-// });
 app.use('/', require('./routes/indexRouter'));
 app.use('/products', require('./routes/productRouter'));
-const { Pool } = require('pg');
-// const pool = new Pool({
-//   connectionString: process.env.DATABASE_URL,
-//   ssl: {
-//     rejectUnauthorized: false
-//   }
-// });
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL || 'postgres://gisodprpoczmqi:ccc515a42e17923f8b3519cfa893f0f7f20351d387e6d768e7041f122e872ef0@ec2-52-200-68-5.compute-1.amazonaws.com:5432/dfqr4uhv1hmis7',
-    ssl: process.env.DATABASE_URL ? true : false
-})
+
 
 app.get('/db', async (req, res) => {
     try {
@@ -50,39 +42,7 @@ app.get('/sync', (req,res)=>{
     });
     
 });
-// app.get('/blog', (req, res)=>{
-//     res.render('blog');
-// });
-// app.get('/cart',(req, res)=>{
-//     res.render('cart');
-// });
-// app.get('/category',(req, res)=>{
-//     res.render('category');
-// });
-// app.get('/checkout', (req, res)=>{
-//     res.render('checkout');
-// });
-// app.get('/confirmation', (req, res)=>{
-//     res.render('confirmation');
-// });
-// app.get('/contact', (req, res)=>{
-//     ré.render('contact');
-// });
-// app.get('/register', (req, res)=>{
-//     res.render('register');
-// });
-// app.get('/single-blog', (req,res)=>{
-//     res.render('single-blog');
-// });
-// app.get('/single-product', (req, res)=>{
-//     res.render('single-product');
-// });
-// app.get('tracking-order', (req, res)=>{
-//     res.render('tracking-order');
-// });
-// app.get('/login', (req, res)=>{
-//     res.render('login');
-// });
+
 app.get('/:page', (req, res)=>{
     let banners={
         blog: 'Our blog',
@@ -97,8 +57,6 @@ app.get('/:page', (req, res)=>{
 
     };
     let page=req.params.page;
-    
-    console.log(page);
     if(page === 'single-product')
         banner='Product Details';
     else if(page === 'tracking-order')
@@ -107,8 +65,6 @@ app.get('/:page', (req, res)=>{
         banner='Blog Details';
     else
         banner= banners[page];
-
-    console.log(banner);
     res.render(page,{banner});
 
 })

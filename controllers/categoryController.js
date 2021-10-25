@@ -1,12 +1,18 @@
 let controller={};
 let models=require('../models');
 let Category =models.Category;
-controller.getAll = ()=>{
+controller.getAll = (query)=>{
+    let options={
+        attributes:['id', 'name', 'imagepath', 'summary'],
+        include: [{model: models.Product}],
+        where:{}
+    };
+    // if(query.category)
+    // {
+    //     options.where.categoryId=query.category;
+    // }
     return new Promise((resolve, reject)=>{
-        Category.findAll({
-            attributes:['id', 'name', 'imagepath', 'summary'],
-            include: [{model: models.Product}]
-        })
+        Category.findAll(options)
         .then(data => resolve(data.map((r) => r.dataValues)))
      
         .catch(error => reject(new Error(error)));
@@ -14,13 +20,4 @@ controller.getAll = ()=>{
 }
 
 module.exports=controller;
-// const { Category, Product } = require('../models');
 
-// module.exports = {
-//   getAll: async (req, res) => {
-//     const rows = await Category.findAll({
-//       include: [{ model: Product }],
-//     });
-//     return rows.map((r) => r.dataValues);
-//   },
-// };

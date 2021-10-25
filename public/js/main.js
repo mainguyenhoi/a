@@ -82,6 +82,37 @@ $(function() {
   });
 
   //------- Price Range slider -------//
+ 
+  let urlParams = new URLSearchParams(location.search);
+  let params={
+    category:0,
+    brand:0,
+    color:0,
+    min:0,
+    max:100
+  }
+  for(let key in params){
+    if(!urlParams.has(key)){
+      urlParams.append(key, params(key));
+    }
+  }
+  //for(let key in params){
+  //  let control =
+  //}
+  function selectParam(key, value, reset = false)
+  {
+    if(reset)
+    {
+      for(let key in params){
+        if(!urlParams.has(key)){
+        urlParams.set(key, params(key));
+      }
+    }
+    urlParams.set(key, value);
+    let url='/products?'+ urlParams.toString();
+    location.href=url;
+  }
+
   if(document.getElementById("price-range")){
   
     var nonLinearSlider = document.getElementById('price-range');
@@ -89,14 +120,14 @@ $(function() {
     noUiSlider.create(nonLinearSlider, {
         connect: true,
         behaviour: 'tap',
-        start: [ 500, 4000 ],
+        start: [ urlParams.get('min') , urlParams.get('max') ],
         range: {
             // Starting at 500, step the value by 500,
             // until 4000 is reached. From there, step by 1000.
-            'min': [ 0 ],
-            '10%': [ 500, 500 ],
-            '50%': [ 4000, 1000 ],
-            'max': [ 10000 ]
+            'min': [0],
+            '10%': [ 10, 10 ],
+            '50%': [ 50, 500 ],
+            'max': [ 100 ]
         }
     });
   
@@ -111,6 +142,11 @@ $(function() {
     nonLinearSlider.noUiSlider.on('update', function ( values, handle, unencoded, isTap, positions ) {
         nodes[handle].innerHTML = values[handle];
     });
+    nonLinearSlider.noUiSlider.on('end', function ( values, handle, unencoded, isTap, positions ) {
+      let value = values[handle];
+      let keys=['min', 'max'];
+      selectParam( keys[handle], value);
+  });
   
   }
   
